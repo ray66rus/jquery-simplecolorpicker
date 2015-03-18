@@ -85,3 +85,13 @@
 .simplecolorpicker span.vr {
   border-left: 1px solid #222; /* @gray-dark */
 }
+
+.simplecolorpicker input[type="color"] {
+  width: 0;
+  height: 0;
+  padding: 0;
+  border: 0;
+  visibility: hidden;
+}
+
+.simplecolorpicker .custom-container { text-align: right; }

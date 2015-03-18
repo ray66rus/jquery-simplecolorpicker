@@ -93,8 +93,11 @@
                          + role + '>'
                          + '</span>');
 
-        self.$colorList.append($colorSpan);
-        $colorSpan.on('click.' + self.type, $.proxy(self.colorSpanClicked, self));
+        if($option.data('is-user-defined') == undefined) {
+          self.$colorList.append($colorSpan);
+          $colorSpan.on('click.' + self.type, $.proxy(self.colorSpanClicked, self));
+        } else
+          self.setupCustomColorSelector($colorSpan);
 
         var $next = $option.next();
         if ($next.is('optgroup') === true) {
@@ -173,6 +176,29 @@
       }
     },
 
+    setupCustomColorSelector: function(colorSpan) {
+      var customColorContainer = $('<div class="custom-container">' + this.options.customString + '&nbsp;</div>');
+      customColorContainer.append(colorSpan);
+      var $userColorSelector = $('<input type="color" value="' + colorSpan.data('color') + '" />');
+      customColorContainer.append($userColorSelector);
+      this.$colorList.append(customColorContainer);
+      $userColorSelector.on('change.' + this.type, $.proxy(this.userColorSelected, this));
+      colorSpan.on('click.' + this.type, function(e) { $(e.target).next().trigger('click') });
+    },
+
+    /**
+     * The user selected custom color
+     */
+    userColorSelected: function(e) {
+      var colorPicker = $(e.target);
+      var userColor = colorPicker.val();
+      var colorSpan = colorPicker.prev();
+      colorSpan.data('color', userColor);
+      this.$select.find('option[data-is-user-defined]').val(userColor);
+      var clickEvt = jQuery.Event('click', {target: colorSpan});
+      this.colorSpanClicked.call(this, clickEvt);
+    },
+
     /**
      * Prevents the mousedown event from "eating" the click event.
      */
@@ -229,7 +255,10 @@
     picker: false,
 
     // Animation delay in milliseconds
-    pickerDelay: 0
+    pickerDelay: 0,
+
+    // Custom color prompt
+    customString: "Select color:"
   };
 
 })(jQuery);
